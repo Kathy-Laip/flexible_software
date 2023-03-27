@@ -8,3 +8,5 @@
 Все составляющие заказа, начиная с текстиля, заканчивая материалами для изготовления гробов хранятся на складе. Производится учет всех компонентов.
 
 Макет приложения: https://www.figma.com/file/rZbJB0q7aW43PPPl1Ozroi/Momentoo-Mori?node-id=0%3A1&t=bfRPnHOYq7gWdmGf-1
+
+Задачи членов команды и их роли: https://docs.google.com/document/d/1j55fL3GYhVnVid-eXPRSe-Hb_IfgUEC5aAPAyipuszU/edit?usp=sharing
