@@ -2,6 +2,7 @@ from flask import Flask, request
 import sqlalchemy
 from config import Config
 import numpy as np
+import json
 
 class Connection:
     def __init__(self, db):
@@ -20,4 +21,23 @@ app.config.from_object(Config)
 my_db = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = Connection(my_db)
 
-print(connection.get_data_from_table('select * from clients;'))
+@app.route("/signin'", methods=["POST"])
+def signInUser():
+    sign_in_info = json.loads(request.get_data())
+    login = sign_in_info['login']
+    password = sign_in_info['password']
+
+    if login == '' or password == '' or login is None or password is None:
+        return r'{otvet:"False"}'
+
+    data = connection.get_data_from_table(f"select status from users where login='{login}' and password='{password}'")
+    print(data)
+
+    if len(data) == 0:
+        return r'{otvet: "False"}'
+    
+    return json.dumps({'otvet': True, 'status': data[0][0]})
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host="0.0.0.0")
