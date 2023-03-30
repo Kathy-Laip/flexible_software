@@ -16,10 +16,28 @@ class User {
             body: JSON.stringify(user)
         });
         let result = await response.json()
-        console.log(result)
+
+
+        if (result.otvet == true){
+            alert('Вы вошли!')
+            if(result.status == "клиент"){
+                alert('Пока нет страниц клиента, попробуйте позже')
+            } else if(result.status == "менеджер"){
+                manager = new Manager({id: result.id})
+                sessionStorage.setItem('managerID', manager.id)
+                window.location.href = '/pages/managerStorage.html'
+            }
+        } else alert('Что-то не так, не удается войти в систему!')
     }
 }
 
+class Manager {
+    constructor(options){
+        this.id = options.id
+    }
+}
+
+var manager
 var user
 const btnClick = () => {
     const log = document.querySelector('#email').value
