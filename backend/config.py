@@ -1,5 +1,7 @@
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://ekaterina:pass@localhost/memento_mori'
+    username = 'ekaterina'
+    password = 'pass'
+    SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{username}:{password}@localhost/memento_mori'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
  
     CSRF_ENABLED = True

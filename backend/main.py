@@ -62,6 +62,30 @@ def getProductsOnManager():
 
     return json.dumps(products_response)
 
+@app.route("/getServicesOnManager", methods=["POST"])
+def getProductsOnManager():
+    product_type = 'услуга'
+    
+    products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+        JOIN products_categories as cat
+        on cat.id = prod.category
+        where prod.type=\'{product_type}\';''')
+    
+    if len(products) == 0:
+        return r'{"products": []}'
+    
+    products_response = {"products": []}
+
+    for product in products:
+        products_response['products'].append({
+            "id": int(product[0]),
+            "cost": int(product[1]),
+            "description": product[2],
+            "type": product[3]
+        })
+
+    return json.dumps(products_response)
+
 # pages
 @app.route("/pages/index.html", methods=["GET"])
 def index():
