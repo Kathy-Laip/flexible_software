@@ -96,6 +96,7 @@ def getStuffOnManager():
         return r'{"stuff": \[], "category": \[]}'
 
     products_response = {"stuff": [], 'category': []}
+    unique_types = set()
 
     for product in products:
         products_response['stuff'].append({
@@ -105,11 +106,12 @@ def getStuffOnManager():
             "type": product[3]
         })
 
-        products_response['category'].append({
-            'type': product[3]
-        })
-
-    products_response['category'] = list(set(products_response['category']))
+        if product[3] not in unique_types:
+            products_response['category'].append({
+                'type': product[3]
+            })
+        
+        unique_types.add(product[3])
 
     return json.dumps(products_response)
 
