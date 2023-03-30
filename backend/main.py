@@ -1,8 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import sqlalchemy
 from config import Config
 import numpy as np
 import json
+import os
 
 class Connection:
     def __init__(self, db):
@@ -16,7 +17,7 @@ class Connection:
         connection = self.db.connect()
         connection.execute(query)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../pages')
 app.config.from_object(Config)
 my_db = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = Connection(my_db)
@@ -38,6 +39,10 @@ def signInUser():
     
     return json.dumps({'otvet': True, 'status': data[0][0]})
 
+@app.route("/pages/index.html", methods=["GET", "POST"])
+def index():
+    print(os.getcwd())
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
