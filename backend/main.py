@@ -63,7 +63,7 @@ def getProductsOnManager():
     return json.dumps(products_response)
 
 @app.route("/getServicesOnManager", methods=["POST"])
-def getProductsOnManager():
+def getServicesOnManager():
     product_type = 'услуга'
     
     products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
