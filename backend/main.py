@@ -74,10 +74,10 @@ def getProductsOnManager():
     if len(products) == 0:
         return r'{"products": []}'
     
-    products_response = {"products": []}
+    products_response = {"services": []}
 
     for product in products:
-        products_response['products'].append({
+        products_response['services'].append({
             "id": int(product[0]),
             "cost": int(product[1]),
             "description": product[2],
