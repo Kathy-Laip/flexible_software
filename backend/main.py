@@ -93,9 +93,9 @@ def getStuffOnManager():
         on cat.id = prod.category;''')
 
     if len(products) == 0:
-        return r'{"stuff": []}'
+        return r'{"stuff": \[], "category": \[]}'
 
-    products_response = {"stuff": []}
+    products_response = {"stuff": [], 'category': []}
 
     for product in products:
         products_response['stuff'].append({
@@ -103,6 +103,10 @@ def getStuffOnManager():
             "cost": int(product[1]),
             "description": product[2],
             "type": product[3]
+        })
+
+        products_response['category'].append({
+            'type': product[3]
         })
 
     return json.dumps(products_response)
