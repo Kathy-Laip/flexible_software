@@ -109,6 +109,8 @@ def getStuffOnManager():
             'type': product[3]
         })
 
+    products_response['category'] = list(set(products_response['category']))
+
     return json.dumps(products_response)
 
 if __name__ == '__main__':
