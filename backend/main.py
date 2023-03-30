@@ -17,7 +17,7 @@ class Connection:
         connection = self.db.connect()
         connection.execute(query)
 
-app = Flask(__name__, template_folder='../pages')
+app = Flask(__name__, template_folder='../pages', static_folder='../pages')
 app.config.from_object(Config)
 my_db = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = Connection(my_db)
@@ -65,7 +65,6 @@ def getProductsOnManager():
 # pages
 @app.route("/pages/index.html", methods=["GET"])
 def index():
-    print(os.getcwd())
     return render_template('index.html')
 
 @app.route("/pages/managerStorage.html", methods=["GET"])
