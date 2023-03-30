@@ -3,7 +3,6 @@ import sqlalchemy
 from config import Config
 import numpy as np
 import json
-import os
 
 class Connection:
     def __init__(self, db):
@@ -49,7 +48,7 @@ def getProductsOnManager():
     
     if len(products) == 0:
         return r'{"products": []}'
-    
+
     products_response = {"products": []}
 
     for product in products:
@@ -72,7 +71,7 @@ def getServicesOnManager():
         where prod.type=\'{product_type}\';''')
     
     if len(products) == 0:
-        return r'{"products": []}'
+        return r'{"services": []}'
     
     products_response = {"services": []}
 
@@ -86,18 +85,27 @@ def getServicesOnManager():
 
     return json.dumps(products_response)
 
-# pages
-@app.route("/pages/index.html", methods=["GET"])
-def index():
-    return render_template('index.html')
+@app.route("/getStuffOnManager", methods=["POST"])
+def getStuffOnManager():
 
-@app.route("/pages/managerStorage.html", methods=["GET"])
-def managerStorage():
-    return render_template('managerStorage.html')
+    products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+        JOIN products_categories as cat
+        on cat.id = prod.category;''')
 
-@app.route("/pages/managerServices.html", methods=["GET"])
-def managerServices():
-    return render_template('managerServices.html')
+    if len(products) == 0:
+        return r'{"stuff": []}'
+
+    products_response = {"stuff": []}
+
+    for product in products:
+        products_response['stuff'].append({
+            "id": int(product[0]),
+            "cost": int(product[1]),
+            "description": product[2],
+            "type": product[3]
+        })
+
+    return json.dumps(products_response)
 
 if __name__ == '__main__':
     app.run(debug=True, host="127.0.0.1")
