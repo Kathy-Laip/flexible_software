@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="./css/managerApplication.css">
     <link rel="icon" href="./images/roseSix.png">
     <title>Оставить заявку</title>
+
+    <style>
+        #x{
+            position: fixed;
+            left: 0;
+            right:0;
+            bottom:0;
+            margin: 200px;
+    }
+    </style>
 </head>
 <body>
     <div class="header">
@@ -70,7 +80,7 @@
     </div>
 
     <div class="products">
-        <p>Гробы:</p>
+        <p>Описание:</p>
         <select name="product" id="product">
             <option value=""></option>
             <!-- <option value="Гроб классический">Гроб классический</option>
@@ -96,8 +106,18 @@
         <div class="containerForProduct"></div>
         <div class="containerForProduct"></div>
         <div class="containerForProduct"></div> -->
-        <button class="arrange">Оформить!</button>
+        <!-- <div class="containerForProduct">
+            <div class="textForProduct">
+
+            </div>
+        </div> -->
+
+        <!-- <div class="containerForProduct" style="background-color: rgba(0,0,0,0.0); height: 50px; bottom: 0;"></div> -->
     </div>
+
+    <button class="arrange" >Оформить!</button>
+
+    <div id="x"></div>
 
     <script src="./js/managerApplication.js"></script>
 </body>

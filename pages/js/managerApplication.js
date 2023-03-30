@@ -41,6 +41,28 @@ async function getStuff(dataStuff){
             }
         }
     })
+
+    document.querySelector('.addProduct').addEventListener('click', function(){
+        var nameProduct = document.getElementById('product').value
+        var categoryProduct = document.getElementById('category').value
+        var countProduct = document.getElementById('count').value
+        var btnOF = document.querySelector('.arrange')
+        var price
+
+        for (let product of infoStuff.stuff){
+            if(product.type == categoryProduct && product.description == nameProduct){
+                price = product.cost * Number(countProduct)
+            }
+        }
+
+        var listProduct = document.querySelector('.listOfProducts')
+        listProduct.innerHTML += `<div class="containerForProduct">
+        <div class="textForProduct">
+            ${categoryProduct} <br> ${nameProduct} <br> Цена: ${price} рублей <br> Количество: ${countProduct}
+        </div>
+    </div>
+        <div class="containerForProduct" style="background-color: rgba(0,0,0,0.0); height: 30px; bottom: 0;"></div>`
+    }) 
 }
 
 request.send()

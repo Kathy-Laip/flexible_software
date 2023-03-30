@@ -24,7 +24,7 @@ async function getProducts(dataAboutProduct){
             <div class="textProduct">
                 ${infoProducts[i].type} <br> ${infoProducts[i].description} <br> ${infoProducts[i].cost} рублей
             </div>
-        </div>`
+        </div>  <div class="containerForProduct" style="background-color: rgba(0,0,0,0.0); height: 30px; bottom: 0; width: 1px;"></div>`
             container.innerHTML += textProduct
         }
     }
