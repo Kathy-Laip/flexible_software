@@ -124,11 +124,11 @@ def getOrders():
     orders = connection.get_data_from_table(f'''select "id", "price", "status", "address", "deadmans_name" from "orders" where "client_ID"={client_id};''')
 
     if orders is None or len(orders) == 0:
-        return json.dumps(r'{orders: \[]}')
+        return json.dumps(r'{orders: []}')
     
-    orders_response = []
+    orders_response = {"orders": []}
     for order in orders:
-        orders_response.append({
+        orders_response['orders'].append({
             'id': order[0],
             'price': order[1],
             'status': order[2],
@@ -136,4 +136,4 @@ def getOrders():
             'deadmans_name': order[4]
         })
 
-    return json.dumps(f'orders: {orders_response}')
+    return json.dumps(orders)
