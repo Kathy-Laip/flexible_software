@@ -141,7 +141,7 @@ def getOrdersByManager():
     manager = json.loads(request.get_data())
 
     bd_request = '''select "id", "price", "status", "address", "deadmans_name" from "orders"''' +\
-        f''' where "client_ID"={manager['id']};''' if manager['all'] else ''
+        (f''' where "manager_ID"={manager['id']};''' if not manager['all'] else ';')
 
     orders = connection.get_data_from_table(bd_request)
 
@@ -158,7 +158,7 @@ def getOrdersByManager():
             'deadmans_name': order[4]
         })
 
-    return json.dumps(orders)
+    return json.dumps(orders_response)
 
 if __name__ == '__main__':
     app.run(debug=True, host="127.0.0.1")

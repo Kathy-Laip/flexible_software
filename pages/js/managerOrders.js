@@ -1,7 +1,7 @@
 const requset = new XMLHttpRequest()
-const clientID = sessionStorage.getItem('clientID')
-console.log(clientID)
-const boxOrders = document.getElementById('services')
+const managerID = sessionStorage.getItem('managerID')
+console.log(managerID)
+const boxOrders = document.getElementById('products')
 
 class Order {
     constructor(options){
@@ -15,13 +15,17 @@ class Order {
 
 const orders = []
 
-async function sendClinetID(){
-    let response = await fetch('/getOrders', {
+async function sendManagerID(){
+    let infoOrders = {
+        id: managerID,
+        all: true
+    }
+    let response = await fetch('/getOrdersByManager', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(clientID)
+        body: JSON.stringify(infoOrders)
     });
     let result = await response.json()
     console.log(typeof(result))
@@ -39,6 +43,6 @@ async function sendClinetID(){
     }
 }
 
-sendClinetID()
+sendManagerID()
 
 // requset.send()

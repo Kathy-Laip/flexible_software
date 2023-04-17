@@ -1,0 +1,25 @@
+.containerOrder{
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 350px;
+
+    background-color: var(--light-brown);
+    border: 1px solid var(--black);
+    box-sizing: border-box;
+
+    margin-bottom: 30px;
+}
+
+.textOrder{
+    position: absolute;
+    width: 90%;
+    left: 5%;
+    top: 10%;
+
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--black);
+    word-wrap: break-word;
+    line-height: 50px;
+}
