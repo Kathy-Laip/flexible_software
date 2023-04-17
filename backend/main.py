@@ -115,12 +115,10 @@ def getStuffOnManager():
 
     return json.dumps(products_response)
 
-if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1")
-
 @app.route("/getOrders", methods=["POST"])
 def getOrders():
-    client_id = json.loads(request.get_data())['client_id']
+    client_id = json.loads(request.get_data())
+
     orders = connection.get_data_from_table(f'''select "id", "price", "status", "address", "deadmans_name" from "orders" where "client_ID"={client_id};''')
 
     if orders is None or len(orders) == 0:
@@ -137,3 +135,30 @@ def getOrders():
         })
 
     return json.dumps(orders)
+
+@app.route("/getOrdersByManager", methods=["POST"])
+def getOrdersByManager():
+    manager = json.loads(request.get_data())
+
+    bd_request = '''select "id", "price", "status", "address", "deadmans_name" from "orders"''' +\
+        f''' where "client_ID"={manager['id']};''' if manager['all'] else ''
+
+    orders = connection.get_data_from_table(bd_request)
+
+    if orders is None or len(orders) == 0:
+        return json.dumps(r'{orders: []}')
+    
+    orders_response = {"orders": []}
+    for order in orders:
+        orders_response['orders'].append({
+            'id': order[0],
+            'price': order[1],
+            'status': order[2],
+            'address': order[3],
+            'deadmans_name': order[4]
+        })
+
+    return json.dumps(orders)
+
+if __name__ == '__main__':
+    app.run(debug=True, host="127.0.0.1")
