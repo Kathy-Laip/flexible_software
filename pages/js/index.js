@@ -21,7 +21,9 @@ class User {
         if (result.otvet == true){
             alert('Вы вошли!')
             if(result.status == "клиент"){
-                alert('Пока нет страниц клиента, попробуйте позже')
+                client = new Client({id: result.id})
+                sessionStorage.setItem('clientID', client.id)
+                window.location.href = '/pages/clientOrders.html'
             } else if(result.status == "менеджер"){
                 manager = new Manager({id: result.id})
                 sessionStorage.setItem('managerID', manager.id)
@@ -37,7 +39,14 @@ class Manager {
     }
 }
 
+class Client{
+    constructor(options){
+        this.id = options.id
+    }
+}
+
 var manager
+var client
 var user
 const btnClick = () => {
     const log = document.querySelector('#email').value

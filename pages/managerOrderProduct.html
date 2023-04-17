@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/index.css">
     <link rel="stylesheet" href="./css/managerStorage.css">
-    <link rel="stylesheet" href="./css/managerServices.css">
-    <link rel="stylesheet" href="./css/managerApplication.css">
+    <link rel="stylesheet" href="./css/managerOrderProduct.css">
     <link rel="icon" href="./images/roseSix.png">
-    <title>Услуги</title>
+    <title>Склад</title>
+    <style>
+        body{
+            background-color: var(--white);
+        }
+    </style>
 </head>
 <body>
     <!-- менюшка сверху, хедер -->
@@ -29,48 +33,34 @@
         <ul>
             <li><a href="/pages/managerStorage.html">Товары</a></li>
             <li><a href="/pages/managerServices.html">Услуги</a></li>
-            <li><a href="/pages/managerOrderProduct.html">Заказать товары</a></li>
+            <li><a href="/pages//managerOrderProduct.html">Заказать товары</a></li>
         </ul>
     </div>
 
     <!-- заголовок раздела -->
     <div class="title">
-        Услуги
+        Заказать товары
     </div>
 
-    <div id="services">
-        <!-- <div class="containerServices">
-            <div class="textServices">
-                dasd';askd;klas;
-            </div>
-        </div>
+    <button class="addLineForProduct" onclick="addLineForProduct()">+</button>
 
-        <div class="containerServices">
-            <div class="textServices">
-                dasd';askd;klas;
-            </div>
-        </div>
-
-        <div class="containerServices">
-            <div class="textServices">
-                dasd';askd;klas;
-            </div>
-        </div> -->
-
-        <!-- <div class="containerServices">
-        </div>
-
-        <div class="containerServices">
-        </div>
-
-        <div class="containerServices">
-        </div>
-
-        <div class="containerServices">
-        </div> -->
-        <!-- <div class="containerForProduct" style="background-color: rgba(0,0,0,0.0); height: 50px;"></div> -->
+    <div class="infoAboutOrderProduct">
+        <ul>
+            <li>Категория</li>
+            <li>Наименование товара</li>
+            <li>Кол-во:</li>
+        </ul>
     </div>
 
-    <script src="./js/managerServices.js"></script>
+    <button class="btnOrder">Заказать!</button>
+    <div id="listOrderProduct">
+       <div class="containerForProductInList">
+            <input type="text" class="categoryInput">
+            <input type="text" class="nameProduct">
+            <input type="text" class="countProduct">
+       </div>
+    </div>
+    
+    <script src="./js/managerOrderProduct.js"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ async function getStuff(dataStuff){
     var infoStuff = JSON.parse(dataStuff)
     console.log(infoStuff)
 
-    console.log(sessionStorage.getItem('managerID'))
+    // console.log(sessionStorage.getItem('managerID'))
 
     insertIntoStuffInCategory(infoStuff.category)
 
