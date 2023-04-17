@@ -117,3 +117,22 @@ def getStuffOnManager():
 
 if __name__ == '__main__':
     app.run(debug=True, host="127.0.0.1")
+
+@app.route("/getOrders", methods=["GET"])
+def getOrders():
+    orders = connection.get_data_from_table(f'''select id, price, status, address, deadmans_name from orders;''')
+
+    if orders is None or len(orders) == 0:
+        return json.dumps(r'{orders: \[]}')
+    
+    orders_response = []
+    for order in orders:
+        orders_response.append({
+            'id': order[0],
+            'price': order[1],
+            'status': order[2],
+            'address': order[3],
+            'deadmans_name': order[4]
+        })
+
+    return json.dumps(f'orders: {orders_response}')
