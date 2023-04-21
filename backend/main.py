@@ -134,7 +134,7 @@ def getOrders():
             'deadmans_name': order[4]
         })
 
-    return json.dumps(orders)
+    return json.dumps(orders_response)
 
 @app.route("/getOrdersByManager", methods=["POST"])
 def getOrdersByManager():
