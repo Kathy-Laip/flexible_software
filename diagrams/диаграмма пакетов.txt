@@ -1,0 +1,30 @@
+@startuml
+package GUI
+package Client [
+clientOrders.html
+clientProduct.html
+clientServices.html
+index.html
+managerApplication.html
+managerOrderProducts.html
+managerOrders.html
+managerServices.html
+managerStorage.html
+]
+package Server [
+config.py
+main.py
+]
+package Database [
+products_categories
+orders
+orders_to_products
+products
+products_to_buy
+users
+]
+
+GUI -- Client
+Client -- Server
+Server -- Database
+@enduml
