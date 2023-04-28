@@ -13,6 +13,13 @@ public void delete_order()
 class Client{
 public void view_order()
 }
+
+class GUI{
+void authorize()
+void get_data()
+}
+
+GUI -- User
 User --> Client
 User --> Manager
 @enduml
