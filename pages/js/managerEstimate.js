@@ -41,8 +41,8 @@ btnP.addEventListener('click', function(){
 
         if (result.response == true){
             alert ('Заказ оформлен!')
-            window.location.href = '/pages/managerStorage'
-        } else alert('Ошибка отправки данных6 попробуйте позднее!')
+            window.location.href = '/pages/managerStorage.html'
+        } else alert('Ошибка отправки данных, попробуйте позднее!')
     }
 
     saveOrder()

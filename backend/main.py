@@ -169,7 +169,11 @@ def addEstimate():
     
     app.connection.execute_query(add_order_query)
 
+<<<<<<< Updated upstream
     all_order_id_request = '''select "order_ID" from "orders_to_products";'''
+=======
+    all_order_id_request = '''select "order_ID" from orders_to_products;'''
+>>>>>>> Stashed changes
     order_id = int(np.max(app.connection.get_data_from_table(all_order_id_request).flatten())+1)
 
     for product in products:

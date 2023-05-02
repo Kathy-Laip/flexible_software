@@ -25,24 +25,25 @@ btnOrder.addEventListener('click', function(){
         listProducts.push(item)
     }
 
-    // async function saveOrder(){
-    //     let sendInfo = {
-    //         "info": info,
-    //         "products": products
-    //     }
-    //     let response = await fetch('/addEstimate', {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(sendInfo)
-    //     });
-    //     let result = await response.json()
+    async function sendProducts(){
+        let sendInfo = {
+            "info": listProducts,
+        }
+        let response = await fetch('/addNewProducts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sendInfo)
+        });
+        let result = await response.json()
 
-    //     if (result.response == true){
-    //         alert ('Заказ оформлен!')
-    //         window.location.href = '/pages/managerStorage'
-    //     } else alert('Ошибка отправки данных6 попробуйте позднее!')
-    // }
+        if (result.response == true){
+            alert ('Заказ оформлен!')
+            window.location.href = '/pages/managerStorage.html'
+        } else alert('Ошибка отправки данных, попробуйте позднее!')
+    }
+
+    // sendProducts()
     console.log(listProducts)
 })
