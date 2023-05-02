@@ -160,24 +160,23 @@ def addEstimate():
     for product in products:
         price += product['pr']
 
-    select_client_ID_by_phone_request = f'''select id from "users" where "phone"={info["phoneNumberClient"]}'''
+    select_client_ID_by_phone_request = f'''select id from "users" where "phone"="{info["phoneNumberClient"]}"'''
     client_id = app.connection.get_data_from_table(select_client_ID_by_phone_request)[0][0]
 
     add_order_query = f'''insert into "orders"("client_ID", "manager_ID", "price", "status", "address", "deadmans_name", "deadmans_passport")
-        values ({client_id}, {info["manageriD"]}, {price}, {"Оформлено"}, {info["address"]}, {info["nameDeceased"]}, {info["dataPassport"]});'''
+        values ({client_id}, {info["manageriD"]}, {price}, "{"Оформлено"}", "{info["address"]}", "{info["nameDeceased"]}", "{info["dataPassport"]}");'''
     
     app.connection.execute_query(add_order_query)
 
     all_order_id_request = '''select order_ID from orders_to_products;'''
     order_id = int(np.max(app.connection.get_data_from_table(all_order_id_request).flatten())+1)
 
-
     for product in products:
         product_id_request =\
         f'''
             select prod.id from "products" as prod
             join products_categories as category on prod.category=category.id
-            where category.name={product["category"]} and prod.details={product["details"]};
+            where category.name="{product["category"]}" and prod.details="{product["details"]}";
         '''
         prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
 
