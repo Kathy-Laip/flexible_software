@@ -1,27 +1,17 @@
-from flask import Flask, request, render_template
-import sqlalchemy
-from config import Config
+from flask import request
 import numpy as np
 import json
+from application import Application
+import os
 
-class Connection:
-    def __init__(self, db):
-        self.db = db
-    
-    def get_data_from_table(self, query):
-        connection = self.db.connect()
-        return np.array(connection.execute(query).fetchall())
+current_folder_path = os.path.dirname(os.path.abspath(__file__))
+initfile = os.path.join(current_folder_path, 'config.ini')
 
-    def execute_query(self, query):
-        connection = self.db.connect()
-        connection.execute(query)
+app = Application()
+app.add_config(initfile)
+app.init_db_connection()
 
-app = Flask(__name__, template_folder='../pages', static_folder='../pages')
-app.config.from_object(Config)
-my_db = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
-connection = Connection(my_db)
-
-@app.route("/signin", methods=["POST"])
+@app.flask.route("/signin", methods=["POST"])
 def signInUser():
     sign_in_info = json.loads(request.get_data())
     login = sign_in_info['login']
@@ -30,18 +20,18 @@ def signInUser():
     if login == '' or password == '' or login is None or password is None:
         return r'{otvet:"False"}'
 
-    data = connection.get_data_from_table(f"select id, status from users where login='{login}' and password='{password}'")
+    data = app.connection.get_data_from_table(f"select id, status from users where login='{login}' and password='{password}'")
 
     if len(data) == 0:
         return r'{otvet: "False"}'
     
     return json.dumps({'otvet': True, 'status': data[0][1], 'id': int(data[0][0])})
 
-@app.route("/getProductsOnManager", methods=["POST"])
+@app.flask.route("/getProductsOnManager", methods=["POST"])
 def getProductsOnManager():
     product_type = 'товар'
     
-    products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
         where prod.type=\'{product_type}\';''')
@@ -61,11 +51,11 @@ def getProductsOnManager():
 
     return json.dumps(products_response)
 
-@app.route("/getServicesOnManager", methods=["POST"])
+@app.flask.route("/getServicesOnManager", methods=["POST"])
 def getServicesOnManager():
     product_type = 'услуга'
     
-    products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
         where prod.type=\'{product_type}\';''')
@@ -85,10 +75,10 @@ def getServicesOnManager():
 
     return json.dumps(products_response)
 
-@app.route("/getStuffOnManager", methods=["POST"])
+@app.flask.route("/getStuffOnManager", methods=["POST"])
 def getStuffOnManager():
 
-    products = connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category;''')
 
@@ -115,11 +105,11 @@ def getStuffOnManager():
 
     return json.dumps(products_response)
 
-@app.route("/getOrders", methods=["POST"])
+@app.flask.route("/getOrders", methods=["POST"])
 def getOrders():
     client_id = json.loads(request.get_data())
 
-    orders = connection.get_data_from_table(f'''select "id", "price", "status", "address", "deadmans_name" from "orders" where "client_ID"={client_id};''')
+    orders = app.connection.get_data_from_table(f'''select "id", "price", "status", "address", "deadmans_name" from "orders" where "client_ID"={client_id};''')
 
     if orders is None or len(orders) == 0:
         return json.dumps(r'{orders: []}')
@@ -136,14 +126,14 @@ def getOrders():
 
     return json.dumps(orders_response)
 
-@app.route("/getOrdersByManager", methods=["POST"])
+@app.flask.route("/getOrdersByManager", methods=["POST"])
 def getOrdersByManager():
     manager = json.loads(request.get_data())
 
     bd_request = '''select "id", "price", "status", "address", "deadmans_name" from "orders"''' +\
         (f''' where "manager_ID"={manager['id']};''' if not manager['all'] else ';')
 
-    orders = connection.get_data_from_table(bd_request)
+    orders = app.connection.get_data_from_table(bd_request)
 
     if orders is None or len(orders) == 0:
         return json.dumps(r'{orders: []}')
@@ -161,4 +151,4 @@ def getOrdersByManager():
     return json.dumps(orders_response)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1", port="5050")
+    app.flask.run(debug=True, host="127.0.0.1", port="5050")
