@@ -169,7 +169,7 @@ def addEstimate():
     
     app.connection.execute_query(add_order_query)
 
-    all_order_id_request = '''select order_ID from orders_to_products;'''
+    all_order_id_request = '''select "order_ID" from "orders_to_products";'''
     order_id = int(np.max(app.connection.get_data_from_table(all_order_id_request).flatten())+1)
 
     for product in products:
@@ -184,6 +184,26 @@ def addEstimate():
         add_new_product_query = f'''insert into "orders_to_products"("order_ID", "product_ID", "amount")
             values ({order_id}, {prod_id}, {product["count"]});'''
         
+        app.connection.execute_query(add_new_product_query)
+    
+    return json.dumps({"response": True})
+
+@app.flask.route("/addNewProducts", methods=["POST"])
+def addNewProducts():
+    products = json.loads(request.get_data())
+
+    for product in products:
+        product_id_request =\
+        f'''
+            select prod.id from "products" as prod
+            join products_categories as category on prod.category=category.id
+            where category.name='{product["category"]}' and prod.details='{product["details"]}';
+        '''
+
+        prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
+
+        add_new_product_query = f'''insert into "products_to_buy"("product_ID", "amount")
+            values ({prod_id}, {product["count"]});'''
         app.connection.execute_query(add_new_product_query)
     
     return json.dumps({"response": True})
