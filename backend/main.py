@@ -155,6 +155,7 @@ def addEstimate():
     estimate = json.loads(request.get_data())
     info = estimate['info']
     products = estimate['products']
+    print(info, products)
 
     price = 0
     for product in products:

@@ -45,6 +45,8 @@ btnP.addEventListener('click', function(){
         } else alert('Ошибка отправки данных6 попробуйте позднее!')
     }
 
+    saveOrder()
+
     console.log(info)
     console.log(products)
 })
