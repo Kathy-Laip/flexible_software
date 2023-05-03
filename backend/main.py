@@ -169,11 +169,7 @@ def addEstimate():
     
     app.connection.execute_query(add_order_query)
 
-<<<<<<< Updated upstream
-    all_order_id_request = '''select "order_ID" from "orders_to_products";'''
-=======
     all_order_id_request = '''select "order_ID" from orders_to_products;'''
->>>>>>> Stashed changes
     order_id = int(np.max(app.connection.get_data_from_table(all_order_id_request).flatten())+1)
 
     for product in products:
@@ -194,9 +190,13 @@ def addEstimate():
 
 @app.flask.route("/addNewProducts", methods=["POST"])
 def addNewProducts():
-    products = json.loads(request.get_data())
+    products = json.loads(request.get_data())["info"]
+    print(products)
 
     for product in products:
+        if not product["count"].isdigit():
+            return json.dumps({"response": False})
+
         product_id_request =\
         f'''
             select prod.id from "products" as prod
@@ -204,7 +204,10 @@ def addNewProducts():
             where category.name='{product["category"]}' and prod.details='{product["details"]}';
         '''
 
-        prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
+        try:
+            prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
+        except:
+            return json.dumps({"response": False})
 
         add_new_product_query = f'''insert into "products_to_buy"("product_ID", "amount")
             values ({prod_id}, {product["count"]});'''

@@ -41,9 +41,9 @@ btnOrder.addEventListener('click', function(){
         if (result.response == true){
             alert ('Заказ оформлен!')
             window.location.href = '/pages/managerStorage.html'
-        } else alert('Ошибка отправки данных, попробуйте позднее!')
+        } else alert('Ошибка отправки данных!')
     }
 
-    // sendProducts()
+    sendProducts()
     console.log(listProducts)
 })
