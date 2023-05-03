@@ -1,3 +1,5 @@
+from configparser import ConfigParser
+
 class Config:
     def __init__(self) -> None:
         self.username = None
@@ -7,7 +9,7 @@ class Config:
         self.CSRF_ENABLED = None
         self.SECRET_KEY = None
     
-    def from_config_object(self, config: dict) -> None:
+    def from_config_object(self, config: ConfigParser) -> None:
         self.username = config.get('flask_config', 'username')
         self.password = config.get('flask_config', 'password')
         self.SQLALCHEMY_DATABASE_URI = config.get('flask_config', 'SQLALCHEMY_DATABASE_URI')

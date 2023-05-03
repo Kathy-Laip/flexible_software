@@ -215,5 +215,59 @@ def addNewProducts():
     
     return json.dumps({"response": True})
 
+@app.flask.route("/deleteProduct", methods=["POST"])
+def deleteProduct():
+    product = json.loads(request.get_data())
+    print(product)
+    if len(product) != 2:
+        return json.dumps({"res": False})
+    
+    category = product[0]
+    details = product[1]
+    
+    product_id_request =\
+        f'''
+            select prod.id from "products" as prod
+            join products_categories as category on prod.category=category.id
+            where category.name='{category}' and prod.details='{details}';
+        '''
+
+    prod_id = None
+    try:
+        prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
+        product_delete_query = f'''delete from products where id={prod_id};'''
+        app.connection.execute_query(product_delete_query)
+    except:
+        return json.dumps({"res": False})
+
+    return json.dumps({"res": True})
+
+@app.flask.route("/addProduct", methods=["POST"])
+def addProduct():
+    product = json.loads(request.get_data())
+    if len(product) != 3:
+        return json.dumps({"res": False})
+    
+    category = product[0]
+    details = product[1]
+    price = product[2]
+
+    try:
+        add_category_query = f'''insert into products_categories(name) values('{category}');'''
+        app.connection.execute_query(add_category_query)
+
+        cat_id = app.connection.get_data_from_table(f'''select id from products_categories where name='{category}';''')[0][0]
+
+        add_product_query =\
+        f'''
+            insert into products(type, category, amount, cost_for_one, details, image_link)
+            values('{"товар"}', {cat_id}, 1, {price}, '{details}', '');
+        '''
+
+        app.connection.execute_query(add_product_query)
+    except:
+        return json.dumps({"res": False})
+    return json.dumps({"res": True})
+
 if __name__ == '__main__':
     app.flask.run(debug=True, host="127.0.0.1", port="5050")

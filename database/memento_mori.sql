@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 12.14 (Ubuntu 12.14-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.14 (Ubuntu 12.14-0ubuntu0.20.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -17,26 +17,21 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: memento_mori; Type: DATABASE; Schema: -; Owner: postgres
+-- Name: delete_products_category_on_product_delete(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE DATABASE memento_mori WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'English_United States.1252';
+CREATE FUNCTION public.delete_products_category_on_product_delete() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+    delete from products_categories as cats where cats.id=OLD.category;
+    delete from products_to_buy as buys where buys."product_ID"=OLD.id;
+    return OLD;
+end;
+$$;
 
 
-ALTER DATABASE memento_mori OWNER TO postgres;
-
-\connect memento_mori
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
+ALTER FUNCTION public.delete_products_category_on_product_delete() OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -305,7 +300,6 @@ COPY public.orders_to_products ("order_ID", "product_ID", amount) FROM stdin;
 --
 
 COPY public.products (id, type, category, amount, cost_for_one, details, image_link) FROM stdin;
-6	услуга	5	1	1000	\N	\N
 7	услуга	6	1	1500	\N	\N
 8	услуга	7	1	1000	\N	\N
 9	услуга	8	1	100	\N	\N
@@ -315,6 +309,7 @@ COPY public.products (id, type, category, amount, cost_for_one, details, image_l
 3	товар	2	50	300	розы	data:image/jpeg;base64
 4	товар	3	10	2000	каменная	https://mygranite.ru/upload/iblock/d20/vvmyb1w8osz9y27qd0he8ofh2k2t9aq6.jpg
 5	товар	4	1	100000	золотой	https://5ritual.ru/upload/product/kresty-na-mogilu/krest-derevyannyi-na-mogilu-005.jpg
+6	услуга	5	1	1000		
 \.
 
 
@@ -327,11 +322,11 @@ COPY public.products_categories (id, name) FROM stdin;
 2	Венок
 3	Табличка
 4	Крест
-5	Гробовщик
 6	Бальзамировщик
 7	Водитель
 8	Священник
 9	Психолог
+5	Гробовщик
 \.
 
 
@@ -438,6 +433,13 @@ ALTER TABLE ONLY public.products_to_buy
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
+
+
+--
+-- Name: products delete_products_category_on_product_delete_trigger; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER delete_products_category_on_product_delete_trigger AFTER DELETE ON public.products FOR EACH ROW EXECUTE FUNCTION public.delete_products_category_on_product_delete();
 
 
 --
