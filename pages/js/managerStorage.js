@@ -21,7 +21,7 @@ async function getProducts(dataAboutProduct){
         var container = document.getElementById('products')
         for(let i = 0; i < infoProducts.length; i++){
             var textProduct = `<div class="containerProduct">
-            <button class='deleteLesson'>&times;</button>
+            <button class='deleteProduct'>&times;</button>
             <div class="textProduct">
                 ${infoProducts[i].type} <br> ${infoProducts[i].description} <br> ${infoProducts[i].cost} рублей
             </div>
@@ -31,7 +31,7 @@ async function getProducts(dataAboutProduct){
     }
 
 
-    var deleteLesson = document.getElementsByClassName("deleteLesson");
+    var deleteLesson = document.getElementsByClassName("deleteProduct");
     for(let i = 0; i < deleteLesson.length; i++){
         deleteLesson[i].addEventListener('click',  function(e) {
             var parent = e.target.closest(".containerProduct")
@@ -54,6 +54,40 @@ async function getProducts(dataAboutProduct){
             deleteProduct()
         }, false)
     }
+
+    let btnAdd = document.querySelector('.addPr')
+    let formAddProduct = document.getElementById('formAdd')
+
+    btnAdd.addEventListener('click', () => {
+        formAddProduct.classList.add('open');
+    });
+
+    let btnAddProduct = document.querySelector('.btnAddProductToDB')
+    btnAddProduct.addEventListener('click', () => {
+        let categorAddProduct = document.getElementById('categorAddProduct').value
+        let detailsAddProduct = document.getElementById('detailsAddProduct').value
+        let costAddProduct = document.getElementById('costAddProduct').value
+        let info = [categorAddProduct, detailsAddProduct, costAddProduct]
+        async function addProduct(){
+            let response = await fetch('/addProduct', {
+                method: 'POST',
+                body: JSON.stringify(info),
+                headers: {
+                    'Accept' : 'application/json',
+                    'Content-Type' : 'appliction/json'
+                }
+            }) 
+            let result = await response.json()
+
+            if(result.res == true){
+                formAddProduct.style.display = 'none'
+            } else{
+                formAddProduct.style.display = 'none'
+                alert('Что-то пошло нет так...')
+            } 
+        }
+        addProduct()
+    })
 }
 
 request.send()
