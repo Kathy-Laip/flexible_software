@@ -2,10 +2,14 @@ from flask import Flask
 from config import Config
 from utils import Connection
 import sqlalchemy
+import os
 
 import configparser
 
 class Application:
+    current_folder_path = os.path.dirname(os.path.abspath(__file__))
+    config_initfile = os.path.join(current_folder_path, 'config.ini')
+
     def __init__(self, application_name=__name__) -> None:
         self.flask = Flask(application_name, template_folder='../pages', static_folder='../pages')
         self._config = None

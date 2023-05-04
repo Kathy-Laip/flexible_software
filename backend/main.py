@@ -4,11 +4,8 @@ import json
 from application import Application
 import os
 
-current_folder_path = os.path.dirname(os.path.abspath(__file__))
-initfile = os.path.join(current_folder_path, 'config.ini')
-
 app = Application()
-app.add_config(initfile)
+app.add_config(Application.config_initfile)
 app.init_db_connection()
 
 @app.flask.route("/signin", methods=["POST"])
