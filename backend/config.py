@@ -8,7 +8,7 @@ class Config:
         self.SQLALCHEMY_TRACK_MODIFICATIONS = None
         self.CSRF_ENABLED = None
         self.SECRET_KEY = None
-    
+
     def from_config_object(self, config: ConfigParser) -> None:
         self.username = config.get('flask_config', 'username')
         self.password = config.get('flask_config', 'password')

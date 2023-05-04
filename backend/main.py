@@ -34,7 +34,7 @@ def getProductsOnManager():
     products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
-        where prod.type=\'{product_type}\';''')
+        where prod.type=\'{product_type}\' and prod.is_selling=1;''')
     
     if len(products) == 0:
         return r'{"products": []}'
@@ -58,7 +58,7 @@ def getServicesOnManager():
     products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
-        where prod.type=\'{product_type}\';''')
+        where prod.type=\'{product_type}\' and prod.is_selling=1;''')
     
     if len(products) == 0:
         return r'{"services": []}'
@@ -80,7 +80,7 @@ def getStuffOnManager():
 
     products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
         JOIN products_categories as cat
-        on cat.id = prod.category;''')
+        on cat.id = prod.category; and prod.is_selling=1''')
 
     if len(products) == 0:
         return r'{"stuff": \[], "category": \[]}'
@@ -235,8 +235,8 @@ def deleteProduct():
     prod_id = None
     try:
         prod_id = app.connection.get_data_from_table(product_id_request)[0][0]
-        product_delete_query = f'''delete from products where id={prod_id};'''
-        app.connection.execute_query(product_delete_query)
+        product_remove_from_sell_query = f'''update products set "is_selling"=0 where id={prod_id};'''
+        app.connection.execute_query(product_remove_from_sell_query)
     except:
         return json.dumps({"res": False})
 
@@ -253,15 +253,20 @@ def addProduct():
     price = product[2]
 
     try:
-        add_category_query = f'''insert into products_categories(name) values('{category}');'''
-        app.connection.execute_query(add_category_query)
-
-        cat_id = app.connection.get_data_from_table(f'''select id from products_categories where name='{category}';''')[0][0]
-
+        select_cat_id_query = f'''select id from products_categories where name='{category}';'''
+        cat_id_result = app.connection.get_data_from_table(select_cat_id_query)
+        cat_id = None
+        if len(cat_id_result) == 0:
+            add_category_query = f'''insert into products_categories(name) values('{category}');'''
+            app.connection.execute_query(add_category_query)
+            cat_id = app.connection.get_data_from_table(select_cat_id_query)[0][0]
+        else:
+            cat_id = cat_id_result[0]
+        
         add_product_query =\
         f'''
-            insert into products(type, category, amount, cost_for_one, details, image_link)
-            values('{"товар"}', {cat_id}, 1, {price}, '{details}', '');
+            insert into products(type, category, amount, cost_for_one, details, image_link, is_selling)
+            values('{"товар"}', {cat_id}, 1, {price}, '{details}', '', 1);
         '''
 
         app.connection.execute_query(add_product_query)

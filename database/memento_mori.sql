@@ -17,21 +17,36 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: delete_products_category_on_product_delete(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: delete_products_category_on_product_delete_after(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.delete_products_category_on_product_delete() RETURNS trigger
+CREATE FUNCTION public.delete_products_category_on_product_delete_after() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
     delete from products_categories as cats where cats.id=OLD.category;
+    return OLD;
+end;
+$$;
+
+
+ALTER FUNCTION public.delete_products_category_on_product_delete_after() OWNER TO postgres;
+
+--
+-- Name: delete_products_category_on_product_delete_before(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.delete_products_category_on_product_delete_before() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
     delete from products_to_buy as buys where buys."product_ID"=OLD.id;
     return OLD;
 end;
 $$;
 
 
-ALTER FUNCTION public.delete_products_category_on_product_delete() OWNER TO postgres;
+ALTER FUNCTION public.delete_products_category_on_product_delete_before() OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -135,7 +150,8 @@ CREATE TABLE public.products (
     amount integer,
     cost_for_one integer,
     details character varying,
-    image_link character varying
+    image_link character varying,
+    is_selling integer
 );
 
 
@@ -299,17 +315,19 @@ COPY public.orders_to_products ("order_ID", "product_ID", amount) FROM stdin;
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.products (id, type, category, amount, cost_for_one, details, image_link) FROM stdin;
-7	услуга	6	1	1500	\N	\N
-8	услуга	7	1	1000	\N	\N
-9	услуга	8	1	100	\N	\N
-10	услуга	9	1	2500	\N	\N
-1	товар	1	10	2000	черный	data:image/jpeg;base64
-2	товар	1	1	20000	с бархатом	data:image/jpeg;base64
-3	товар	2	50	300	розы	data:image/jpeg;base64
-4	товар	3	10	2000	каменная	https://mygranite.ru/upload/iblock/d20/vvmyb1w8osz9y27qd0he8ofh2k2t9aq6.jpg
-5	товар	4	1	100000	золотой	https://5ritual.ru/upload/product/kresty-na-mogilu/krest-derevyannyi-na-mogilu-005.jpg
-6	услуга	5	1	1000		
+COPY public.products (id, type, category, amount, cost_for_one, details, image_link, is_selling) FROM stdin;
+7	услуга	6	1	1500	\N	\N	1
+8	услуга	7	1	1000	\N	\N	1
+9	услуга	8	1	100	\N	\N	1
+10	услуга	9	1	2500	\N	\N	1
+4	товар	3	10	2000	каменная	https://mygranite.ru/upload/iblock/d20/vvmyb1w8osz9y27qd0he8ofh2k2t9aq6.jpg	1
+5	товар	4	1	100000	золотой	https://5ritual.ru/upload/product/kresty-na-mogilu/krest-derevyannyi-na-mogilu-005.jpg	1
+6	услуга	5	1	1000			1
+11	товар	1	1	1020	белый		0
+2	товар	1	1	20000	с бархатом	data:image/jpeg;base64	0
+13	товар	1	1	200	дубовый		1
+1	товар	1	10	2000	черный	data:image/jpeg;base64	0
+14	товар	13	1	200000	черный		0
 \.
 
 
@@ -319,7 +337,6 @@ COPY public.products (id, type, category, amount, cost_for_one, details, image_l
 
 COPY public.products_categories (id, name) FROM stdin;
 1	Гроб
-2	Венок
 3	Табличка
 4	Крест
 6	Бальзамировщик
@@ -327,6 +344,10 @@ COPY public.products_categories (id, name) FROM stdin;
 8	Священник
 9	Психолог
 5	Гробовщик
+10	Гроб
+11	Гроб
+12	Гроб
+13	Гробище
 \.
 
 
@@ -356,7 +377,7 @@ COPY public.users (id, status, login, password, name, email, phone) FROM stdin;
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categories_id_seq', 9, true);
+SELECT pg_catalog.setval('public.categories_id_seq', 13, true);
 
 
 --
@@ -370,7 +391,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 3, true);
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 10, true);
+SELECT pg_catalog.setval('public.products_id_seq', 14, true);
 
 
 --
@@ -433,13 +454,6 @@ ALTER TABLE ONLY public.products_to_buy
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
-
-
---
--- Name: products delete_products_category_on_product_delete_trigger; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER delete_products_category_on_product_delete_trigger AFTER DELETE ON public.products FOR EACH ROW EXECUTE FUNCTION public.delete_products_category_on_product_delete();
 
 
 --
