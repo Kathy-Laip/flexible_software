@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.14 (Ubuntu 12.14-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 12.14 (Ubuntu 12.14-0ubuntu0.20.04.1)
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -17,36 +17,57 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: delete_products_category_on_product_delete_after(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: memento_mori; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE FUNCTION public.delete_products_category_on_product_delete_after() RETURNS trigger
+CREATE DATABASE memento_mori WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'English_United States.1252';
+
+
+ALTER DATABASE memento_mori OWNER TO postgres;
+
+\connect memento_mori
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: check_product_amount(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.check_product_amount() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-begin
-    delete from products_categories as cats where cats.id=OLD.category;
-    return OLD;
-end;
-$$;
+    BEGIN
+        CALL subtract_product_amount(NEW.amount, NEW."product_ID");
+        RETURN NEW;
+    END;
+    $$;
 
 
-ALTER FUNCTION public.delete_products_category_on_product_delete_after() OWNER TO postgres;
+ALTER FUNCTION public.check_product_amount() OWNER TO postgres;
 
 --
--- Name: delete_products_category_on_product_delete_before(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: subtract_product_amount(integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.delete_products_category_on_product_delete_before() RETURNS trigger
+CREATE PROCEDURE public.subtract_product_amount(IN integer, IN integer)
     LANGUAGE plpgsql
-    AS $$
-begin
-    delete from products_to_buy as buys where buys."product_ID"=OLD.id;
-    return OLD;
-end;
-$$;
+    AS $_$
+BEGIN
+  UPDATE products SET amount = amount - $1 WHERE id = $2 AND type = 'товар';
+END;
+$_$;
 
 
-ALTER FUNCTION public.delete_products_category_on_product_delete_before() OWNER TO postgres;
+ALTER PROCEDURE public.subtract_product_amount(IN integer, IN integer) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -151,7 +172,7 @@ CREATE TABLE public.products (
     cost_for_one integer,
     details character varying,
     image_link character varying,
-    is_selling integer
+    deleted boolean DEFAULT false
 );
 
 
@@ -232,6 +253,20 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
+-- Name: users_ID_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."users_ID_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."users_ID_seq" OWNER TO postgres;
+
+--
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -292,9 +327,9 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.orders (id, "client_ID", "manager_ID", price, status, address, deadmans_name, deadmans_passport) FROM stdin;
-3	4	1	10500	доставлен	улица Галимджана Баруди, 16к3, Казань, Республика Татарстан, 420102	Чернов Карл Митрофанович	9217 394294
-2	5	3	20000	готов к отгрузке	проспект Победы, 206, Казань, Республика Татарстан, 420088	Белоусов Константин Петрович	9216 402840
-1	6	2	10000	в обработке	Раздольная улица, 8, жилой массив Старые Горки, Приволжский район, Казань, Республика Татарстан, 420071	Щербакова Святослава Иринеевна	9210 037492
+3	3	1	10500	доставлен	улица Галимджана Баруди, 16к3, Казань, Республика Татарстан, 420102	Чернов Карл Митрофанович	9217 394294
+2	2	3	20000	готов к отгрузке	проспект Победы, 206, Казань, Республика Татарстан, 420088	Белоусов Константин Петрович	9216 402840
+1	1	2	10000	в обработке	Раздольная улица, 8, жилой массив Старые Горки, Приволжский район, Казань, Республика Татарстан, 420071	Щербакова Святослава Иринеевна	9210 037492
 \.
 
 
@@ -303,11 +338,11 @@ COPY public.orders (id, "client_ID", "manager_ID", price, status, address, deadm
 --
 
 COPY public.orders_to_products ("order_ID", "product_ID", amount) FROM stdin;
-1	1	1
-2	1	1
 2	4	1
 3	1	1
 3	5	1
+1	1	1
+2	1	1
 \.
 
 
@@ -315,19 +350,17 @@ COPY public.orders_to_products ("order_ID", "product_ID", amount) FROM stdin;
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.products (id, type, category, amount, cost_for_one, details, image_link, is_selling) FROM stdin;
-7	услуга	6	1	1500	\N	\N	1
-8	услуга	7	1	1000	\N	\N	1
-9	услуга	8	1	100	\N	\N	1
-10	услуга	9	1	2500	\N	\N	1
-4	товар	3	10	2000	каменная	https://mygranite.ru/upload/iblock/d20/vvmyb1w8osz9y27qd0he8ofh2k2t9aq6.jpg	1
-5	товар	4	1	100000	золотой	https://5ritual.ru/upload/product/kresty-na-mogilu/krest-derevyannyi-na-mogilu-005.jpg	1
-6	услуга	5	1	1000			1
-11	товар	1	1	1020	белый		0
-2	товар	1	1	20000	с бархатом	data:image/jpeg;base64	0
-13	товар	1	1	200	дубовый		1
-1	товар	1	10	2000	черный	data:image/jpeg;base64	0
-14	товар	13	1	200000	черный		0
+COPY public.products (id, type, category, amount, cost_for_one, details, image_link, deleted) FROM stdin;
+6	услуга	5	1	1000	\N	\N	f
+7	услуга	6	1	1500	\N	\N	f
+8	услуга	7	1	1000	\N	\N	f
+9	услуга	8	1	100	\N	\N	f
+10	услуга	9	1	2500	\N	\N	f
+2	товар	1	1	20000	с бархатом	data:image/jpeg;base64	f
+3	товар	2	50	300	розы	data:image/jpeg;base64	f
+4	товар	3	10	2000	каменная	https://mygranite.ru/upload/iblock/d20/vvmyb1w8osz9y27qd0he8ofh2k2t9aq6.jpg	f
+5	товар	4	1	100000	золотой	https://5ritual.ru/upload/product/kresty-na-mogilu/krest-derevyannyi-na-mogilu-005.jpg	f
+1	товар	1	8	2000	черный	data:image/jpeg;base64	f
 \.
 
 
@@ -337,17 +370,14 @@ COPY public.products (id, type, category, amount, cost_for_one, details, image_l
 
 COPY public.products_categories (id, name) FROM stdin;
 1	Гроб
+2	Венок
 3	Табличка
 4	Крест
+5	Гробовщик
 6	Бальзамировщик
 7	Водитель
 8	Священник
 9	Психолог
-5	Гробовщик
-10	Гроб
-11	Гроб
-12	Гроб
-13	Гробище
 \.
 
 
@@ -377,7 +407,7 @@ COPY public.users (id, status, login, password, name, email, phone) FROM stdin;
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categories_id_seq', 13, true);
+SELECT pg_catalog.setval('public.categories_id_seq', 9, true);
 
 
 --
@@ -391,7 +421,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 3, true);
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 14, true);
+SELECT pg_catalog.setval('public.products_id_seq', 10, true);
 
 
 --
@@ -399,6 +429,13 @@ SELECT pg_catalog.setval('public.products_id_seq', 14, true);
 --
 
 SELECT pg_catalog.setval('public.products_to_buy_id_seq', 1, false);
+
+
+--
+-- Name: users_ID_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."users_ID_seq"', 1, false);
 
 
 --
@@ -454,6 +491,13 @@ ALTER TABLE ONLY public.products_to_buy
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
+
+
+--
+-- Name: orders_to_products update_amount_of_ordered_products; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_amount_of_ordered_products AFTER INSERT ON public.orders_to_products FOR EACH ROW EXECUTE FUNCTION public.check_product_amount();
 
 
 --
