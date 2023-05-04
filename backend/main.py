@@ -31,7 +31,8 @@ def signInUser():
 def getProductsOnManager():
     product_type = 'товар'
     
-    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(
+        f'''select prod.id, prod.cost_for_one, prod.details, cat.name, cat.image_link from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
         where prod.type=\'{product_type}\' and prod.is_selling=1;''')
@@ -55,7 +56,8 @@ def getProductsOnManager():
 def getServicesOnManager():
     product_type = 'услуга'
     
-    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(
+        f'''select prod.id, prod.cost_for_one, prod.details, cat.name, cat.image_link from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category
         where prod.type=\'{product_type}\' and prod.is_selling=1;''')
@@ -78,7 +80,8 @@ def getServicesOnManager():
 @app.flask.route("/getStuffOnManager", methods=["POST"])
 def getStuffOnManager():
 
-    products = app.connection.get_data_from_table(f'''select prod.id, prod.cost_for_one, prod.details, cat.name from products as prod
+    products = app.connection.get_data_from_table(
+        f'''select prod.id, prod.cost_for_one, prod.details, cat.name, cat.image_link from products as prod
         JOIN products_categories as cat
         on cat.id = prod.category; and prod.is_selling=1''')
 
@@ -252,26 +255,26 @@ def addProduct():
     details = product[1]
     price = product[2]
 
-    try:
-        select_cat_id_query = f'''select id from products_categories where name='{category}';'''
-        cat_id_result = app.connection.get_data_from_table(select_cat_id_query)
-        cat_id = None
-        if len(cat_id_result) == 0:
-            add_category_query = f'''insert into products_categories(name) values('{category}');'''
-            app.connection.execute_query(add_category_query)
-            cat_id = app.connection.get_data_from_table(select_cat_id_query)[0][0]
-        else:
-            cat_id = cat_id_result[0]
-        
-        add_product_query =\
-        f'''
-            insert into products(type, category, amount, cost_for_one, details, image_link, is_selling)
-            values('{"товар"}', {cat_id}, 1, {price}, '{details}', '', 1);
-        '''
+    # try:
+    select_cat_id_query = f'''select id from products_categories where name='{category}';'''
+    cat_id_result = app.connection.get_data_from_table(select_cat_id_query)
+    cat_id = None
+    if len(cat_id_result) == 0:
+        add_category_query = f'''insert into products_categories(name) values('{category}');'''
+        app.connection.execute_query(add_category_query)
+        cat_id = app.connection.get_data_from_table(select_cat_id_query)[0][0]
+    else:
+        cat_id = cat_id_result[0][0]
+    
+    add_product_query =\
+    f'''
+        insert into products(type, category, amount, cost_for_one, details, image_link, is_selling)
+        values('{"товар"}', {cat_id}, 1, {price}, '{details}', '', 1);
+    '''
 
-        app.connection.execute_query(add_product_query)
-    except:
-        return json.dumps({"res": False})
+    app.connection.execute_query(add_product_query)
+    # except:
+    #     return json.dumps({"res": False})
     return json.dumps({"res": True})
 
 if __name__ == '__main__':

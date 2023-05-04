@@ -180,6 +180,7 @@
     display: block;
     z-index: 1;
 }
+
 @keyframes fadeIn {
     from {
       opacity: 0;
@@ -199,7 +200,7 @@ input{
     margin-bottom: 5%;
 }
 
-.btnAdd{
+.btnAddProductToDB{
     position: absolute;
     bottom: 5%;
     right: 8%;
@@ -208,4 +209,21 @@ input{
     font-size: 20px;
     width: 20%;
     height: 10%;
+}
+
+.closeAddProduct{
+    position: absolute;
+    top: 5%;
+    right: 5%;
+
+    border: none;
+    font-size: 32px;
+    width: 10%;
+    height: 10%;
+    background-color: black;
+    color: white;
+}
+
+.closeAddProduct:hover{
+    color: gray;
 }

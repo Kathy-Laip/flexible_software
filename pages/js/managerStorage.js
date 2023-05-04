@@ -62,7 +62,12 @@ async function getProducts(dataAboutProduct){
         formAddProduct.classList.add('open');
     });
 
-    let btnAddProduct = document.querySelector('.btnAddProductToDB')
+    let closeAddProduct = document.querySelector('.closeAddProduct')
+    closeAddProduct.addEventListener('click', () => {
+        formAddProduct.classList.remove('open');
+    })
+
+    let btnAddProduct = document.querySelector('.btnAddProductToDB') 
     btnAddProduct.addEventListener('click', () => {
         let categorAddProduct = document.getElementById('categorAddProduct').value
         let detailsAddProduct = document.getElementById('detailsAddProduct').value
@@ -81,6 +86,10 @@ async function getProducts(dataAboutProduct){
 
             if(result.res == true){
                 formAddProduct.style.display = 'none'
+                alert('Товар успешно добавлен!')
+                setTimeout(() => {
+                    window.location.href = '/pages/managerStorage.html'
+                }, 1000)
             } else{
                 formAddProduct.style.display = 'none'
                 alert('Что-то пошло нет так...')
@@ -88,6 +97,7 @@ async function getProducts(dataAboutProduct){
         }
         addProduct()
     })
+
 }
 
 request.send()
