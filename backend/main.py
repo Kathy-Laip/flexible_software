@@ -2,7 +2,6 @@ from flask import request
 import numpy as np
 import json
 from application import Application
-import os
 
 app = Application()
 app.add_config(Application.config_initfile)
@@ -19,7 +18,7 @@ def signInUser():
 
     data = app.connection.get_data_from_table(f"select id, status from users where login='{login}' and password='{password}'")
 
-    if len(data) == 0:
+    if type(data) is Exception or len(data) == 0:
         return r'{otvet: "False"}'
     
     return json.dumps({'otvet': True, 'status': data[0][1], 'id': int(data[0][0])})
@@ -34,7 +33,7 @@ def getProductsOnManager():
         on cat.id = prod.category
         where prod.type=\'{product_type}\' and prod.is_selling=1;''')
     
-    if len(products) == 0:
+    if type(products) is Exception or len(products) == 0:
         return r'{"products": []}'
 
     products_response = {"products": []}
@@ -59,7 +58,7 @@ def getServicesOnManager():
         on cat.id = prod.category
         where prod.type=\'{product_type}\' and prod.is_selling=1;''')
     
-    if len(products) == 0:
+    if type(products) is Exception or len(products) == 0:
         return r'{"services": []}'
     
     products_response = {"services": []}
@@ -82,7 +81,7 @@ def getStuffOnManager():
         JOIN products_categories as cat
         on cat.id = prod.category; and prod.is_selling=1''')
 
-    if len(products) == 0:
+    if type(products) is Exception or len(products) == 0:
         return r'{"stuff": \[], "category": \[]}'
 
     products_response = {"stuff": [], 'category': []}
@@ -111,7 +110,7 @@ def getOrders():
 
     orders = app.connection.get_data_from_table(f'''select "id", "price", "status", "address", "deadmans_name" from "orders" where "client_ID"={client_id};''')
 
-    if orders is None or len(orders) == 0:
+    if type(orders) is Exception or orders is None or len(orders) == 0:
         return json.dumps(r'{orders: []}')
     
     orders_response = {"orders": []}
@@ -135,7 +134,7 @@ def getOrdersByManager():
 
     orders = app.connection.get_data_from_table(bd_request)
 
-    if orders is None or len(orders) == 0:
+    if type(orders) is Exception or orders is None or len(orders) == 0:
         return json.dumps(r'{orders: []}')
     
     orders_response = {"orders": []}
