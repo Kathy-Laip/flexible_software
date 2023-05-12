@@ -1,6 +1,7 @@
 @startuml
-package GUI
-package Client [
+[GUI]
+component Client[
+Client:
 clientOrders.html
 clientProduct.html
 clientServices.html
@@ -11,11 +12,13 @@ managerOrders.html
 managerServices.html
 managerStorage.html
 ]
-package Server [
+component Server [
+Server:
 config.py
 main.py
 ]
-package Database [
+component Database [
+Database:
 products_categories
 orders
 orders_to_products
@@ -24,7 +27,7 @@ products_to_buy
 users
 ]
 
-GUI -- Client
-Client -- Server
-Server -- Database
+[GUI] -- [Client]
+[Client] -- [Server]
+[Server] -- [Database]
 @enduml
